@@ -1,0 +1,45 @@
+.nav {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 0 16px;
+  border-bottom: 1px solid #e6e6e6;
+  background: #fff;
+  position: sticky;
+  top: 0;
+}
+
+.brand {
+  font-weight: 800;
+}
+
+.links {
+  display: flex;
+  gap: 12px;
+  flex: 1;
+}
+
+.links a {
+  text-decoration: none;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: #333;
+}
+
+.links a.active {
+  background: #eef2ff;
+  font-weight: 700;
+}
+
+.logout {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.content {
+  padding: 16px;
+}

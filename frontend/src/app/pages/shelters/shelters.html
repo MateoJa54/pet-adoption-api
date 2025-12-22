@@ -1,0 +1,16 @@
+<h2>Shelters</h2>
+
+<table border="1" cellpadding="6">
+  <tr>
+    <th>Nombre</th>
+    <th>Dirección</th>
+    <th>Teléfono</th>
+    <th>Email</th>
+  </tr>
+  <tr *ngFor="let s of shelters">
+    <td>{{ s.name }}</td>
+    <td>{{ s.address }}</td>
+    <td>{{ s.phone }}</td>
+    <td>{{ s.email }}</td>
+  </tr>
+</table>

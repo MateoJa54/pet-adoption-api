@@ -1,0 +1,16 @@
+<nav class="nav">
+  <div class="brand">Pet Adoption</div>
+
+  <div class="links">
+    <a routerLink="/pets" routerLinkActive="active">Pets</a>
+    <a routerLink="/shelters" routerLinkActive="active">Shelters</a>
+    <a routerLink="/adopters" routerLinkActive="active">Adopters</a>
+    <a routerLink="/requests" routerLinkActive="active">Requests</a>
+  </div>
+
+  <button class="logout" (click)="logout()">Logout</button>
+</nav>
+
+<main class="content">
+  <router-outlet></router-outlet>
+</main>

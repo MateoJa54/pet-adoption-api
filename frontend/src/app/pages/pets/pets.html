@@ -1,0 +1,23 @@
+<h2>Pets</h2>
+
+<p *ngIf="loading">Cargando...</p>
+<p *ngIf="error" style="color:red">{{ error }}</p>
+
+<table *ngIf="!loading && !error" border="1" cellpadding="6">
+  <tr>
+    <th>Nombre</th>
+    <th>Especie</th>
+    <th>Raza</th>
+    <th>Edad</th>
+    <th>Sexo</th>
+    <th>Estado</th>
+  </tr>
+  <tr *ngFor="let p of pets">
+    <td>{{ p.name }}</td>
+    <td>{{ p.species }}</td>
+    <td>{{ p.breed }}</td>
+    <td>{{ p.ageYears }}</td>
+    <td>{{ p.sex }}</td>
+    <td>{{ p.status }}</td>
+  </tr>
+</table>

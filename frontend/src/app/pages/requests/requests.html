@@ -1,0 +1,20 @@
+<p>requests works!</p>
+<h2>Adoption Requests</h2>
+
+<p *ngIf="loading">Cargando...</p>
+<p *ngIf="error" style="color:red">{{ error }}</p>
+
+<table *ngIf="!loading && !error" border="1" cellpadding="6">
+  <tr>
+    <th>Pet ID</th>
+    <th>Adopter ID</th>
+    <th>Status</th>
+    <th>Comments</th>
+  </tr>
+  <tr *ngFor="let r of requests">
+    <td>{{ r.petId }}</td>
+    <td>{{ r.adopterId }}</td>
+    <td>{{ r.status }}</td>
+    <td>{{ r.comments }}</td>
+  </tr>
+</table>

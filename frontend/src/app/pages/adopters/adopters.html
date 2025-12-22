@@ -1,0 +1,19 @@
+<h2>Adopters</h2>
+
+<p *ngIf="loading">Cargando...</p>
+<p *ngIf="error" style="color:red">{{ error }}</p>
+
+<table *ngIf="!loading && !error" border="1" cellpadding="6">
+  <tr>
+    <th>Full Name</th>
+    <th>National ID</th>
+    <th>Phone</th>
+    <th>Email</th>
+  </tr>
+  <tr *ngFor="let a of adopters">
+    <td>{{ a.fullName }}</td>
+    <td>{{ a.nationalId }}</td>
+    <td>{{ a.phone }}</td>
+    <td>{{ a.email }}</td>
+  </tr>
+</table>
