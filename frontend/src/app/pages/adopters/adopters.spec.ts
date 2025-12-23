@@ -9,7 +9,7 @@ describe('AdoptersComponent - Frontend Tests', () => {
   let adoptersSvcSpy: jasmine.SpyObj<AdoptersService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('AdoptersService', ['getAll']);
+    const spy = jasmine.createSpyObj('AdoptersService', ['getAll', 'getById', 'create', 'update', 'delete']);
     spy.getAll.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
@@ -59,7 +59,7 @@ describe('AdoptersComponent - Frontend Tests', () => {
     expect(table).toBeTruthy();
     
     const headers = table?.querySelectorAll('th');
-    expect(headers?.length).toBe(4);
+    expect(headers?.length).toBe(5);
     expect(headers?.[0].textContent).toBe('Full Name');
     expect(headers?.[1].textContent).toBe('National ID');
     expect(headers?.[2].textContent).toBe('Phone');
@@ -150,5 +150,213 @@ describe('AdoptersComponent - Frontend Tests', () => {
     adoptersSvcSpy.getAll.and.returnValue(throwError(() => ({})));
     component.ngOnInit();
     expect(component.error).toBe('Error cargando adopters');
+  });
+
+  // Test toggleForm() - muestra el formulario
+  // Verifica que toggleForm() cambia showForm a true cuando estaba en false
+  // Métodos usados:
+  // - toggleForm() - Alterna la visibilidad del formulario
+  // - expect().toBeTrue() - Verifica que el valor sea true
+  // Sirve para: Validar que el formulario se muestra correctamente al presionar el botón "Agregar"
+  it('should toggle showForm to true when toggleForm is called', () => {
+    component.showForm = false;
+    component.toggleForm();
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test toggleForm() - oculta el formulario y resetea
+  // Verifica que al llamar toggleForm() cuando showForm es true, se oculta el formulario y se limpian los datos
+  // Métodos usados:
+  // - toggleForm() - Alterna la visibilidad del formulario y resetea datos cuando se oculta
+  // - expect().toBeFalse() - Verifica que el valor sea false
+  // - expect().toBe('') - Verifica que el string esté vacío
+  // - expect().toBeNull() - Verifica que el valor sea null
+  // Sirve para: Validar que el formulario se oculta correctamente y limpia el estado de edición
+  it('should toggle showForm to false and reset form when toggleForm is called', () => {
+    component.showForm = true;
+    component.formData.fullName = 'John Doe';
+    component.editingId = '123';
+    component.toggleForm();
+    expect(component.showForm).toBeFalse();
+    expect(component.formData.fullName).toBe('');
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test resetForm() - limpia el formulario
+  // Verifica que resetForm() restablece todos los campos del formulario a sus valores iniciales
+  // Métodos usados:
+  // - resetForm() - Limpia todos los campos del formulario y el ID de edición
+  // - expect().toEqual() - Verifica igualdad profunda entre objetos
+  // - expect().toBeNull() - Verifica que el valor sea null
+  // Sirve para: Asegurar que el formulario vuelve a su estado inicial después de crear/editar
+  it('should reset form data when resetForm is called', () => {
+    component.formData = { fullName: 'John Doe', nationalId: '123456', phone: '555-1234', email: 'john@example.com' };
+    component.editingId = '123';
+    component.resetForm();
+    expect(component.formData).toEqual({ fullName: '', nationalId: '', phone: '', email: '' });
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test saveAdopter() - crear nuevo adoptante
+  // Verifica que saveAdopter() llama al servicio create() cuando editingId es null (modo creación)
+  // Métodos usados:
+  // - saveAdopter() - Guarda un adoptante (crea o actualiza según editingId)
+  // - spy.and.returnValue(of({})) - Configura el spy para retornar un observable exitoso
+  // - expect().toHaveBeenCalledWith() - Verifica que el método fue llamado con argumentos específicos
+  // - of({}) - Crea un observable que emite un objeto vacío
+  // Sirve para: Validar que se crea un nuevo adoptante cuando no hay ID de edición
+  it('should create new adopter when saveAdopter is called without editingId', () => {
+    component.editingId = null;
+    component.formData = { fullName: 'John Doe', nationalId: '123456', phone: '555-1234', email: 'john@example.com' };
+    adoptersSvcSpy.create.and.returnValue(of({}));
+    adoptersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveAdopter();
+    
+    expect(adoptersSvcSpy.create).toHaveBeenCalledWith(component.formData);
+  });
+
+  // Test saveAdopter() - actualizar adoptante existente
+  // Verifica que saveAdopter() llama al servicio update() cuando editingId tiene un valor (modo edición)
+  // Métodos usados:
+  // - saveAdopter() - Guarda un adoptante (crea o actualiza según editingId)
+  // - spy.and.returnValue(of({})) - Configura el spy para retornar un observable exitoso
+  // - expect().toHaveBeenCalledWith() - Verifica que el método fue llamado con ID y datos específicos
+  // Sirve para: Validar que se actualiza un adoptante existente cuando hay ID de edición
+  it('should update existing adopter when saveAdopter is called with editingId', () => {
+    component.editingId = '123';
+    component.formData = { fullName: 'John Updated', nationalId: '123456', phone: '555-9999', email: 'john@example.com' };
+    adoptersSvcSpy.update.and.returnValue(of({}));
+    adoptersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveAdopter();
+    
+    expect(adoptersSvcSpy.update).toHaveBeenCalledWith('123', component.formData);
+  });
+
+  // Test saveAdopter() - manejo de error al crear
+  // Verifica que saveAdopter() maneja correctamente errores con mensaje al crear un adoptante
+  // Métodos usados:
+  // - saveAdopter() - Guarda un adoptante
+  // - throwError() - Crea un observable que emite un error
+  // - expect().toBe() - Verifica igualdad estricta (===)
+  // Sirve para: Validar que se captura y muestra el mensaje de error del servidor al crear
+  it('should handle error when creating adopter fails', () => {
+    component.editingId = null;
+    const mockError = { error: { message: 'Error al crear' } };
+    adoptersSvcSpy.create.and.returnValue(throwError(() => mockError));
+    
+    component.saveAdopter();
+    
+    expect(component.error).toBe('Error al crear');
+  });
+
+  // Test saveAdopter() - manejo de error sin mensaje al crear
+  it('should use default error message when creating adopter fails without error message', () => {
+    component.editingId = null;
+    adoptersSvcSpy.create.and.returnValue(throwError(() => ({})));
+    
+    component.saveAdopter();
+    
+    expect(component.error).toBe('Error creando adopter');
+  });
+
+  // Test saveAdopter() - manejo de error al actualizar
+  it('should handle error when updating adopter fails', () => {
+    component.editingId = '123';
+    const mockError = { error: { message: 'Error al actualizar' } };
+    adoptersSvcSpy.update.and.returnValue(throwError(() => mockError));
+    
+    component.saveAdopter();
+    
+    expect(component.error).toBe('Error al actualizar');
+  });
+
+  // Test saveAdopter() - manejo de error sin mensaje al actualizar
+  it('should use default error message when updating adopter fails without error message', () => {
+    component.editingId = '123';
+    adoptersSvcSpy.update.and.returnValue(throwError(() => ({})));
+    
+    component.saveAdopter();
+    
+    expect(component.error).toBe('Error actualizando adopter');
+  });
+
+  // Test editAdopter() - carga datos en el formulario
+  // Verifica que editAdopter() carga los datos de un adoptante en el formulario para su edición
+  // Métodos usados:
+  // - editAdopter(adopter) - Carga los datos del adoptante en formData y establece editingId
+  // - expect().toBe() - Verifica igualdad estricta
+  // - expect().toBeTrue() - Verifica que el valor sea true
+  // Sirve para: Validar que el formulario se prepara correctamente para editar un adoptante existente
+  it('should load adopter data into form when editAdopter is called', () => {
+    const mockAdopter = { _id: '123', fullName: 'John Doe', nationalId: '123456', phone: '555-1234', email: 'john@example.com' };
+    
+    component.editAdopter(mockAdopter);
+    
+    expect(component.editingId).toBe('123');
+    expect(component.formData.fullName).toBe('John Doe');
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test deleteAdopter() - elimina adoptante con confirmación
+  // Verifica que deleteAdopter() elimina un adoptante cuando el usuario confirma la acción
+  // Métodos usados:
+  // - deleteAdopter(id) - Elimina un adoptante después de confirmación del usuario
+  // - spyOn(window, 'confirm') - Crea un spy sobre window.confirm para simular respuesta del usuario
+  // - spy.and.returnValue(true) - Simula que el usuario presiona "Aceptar" en el diálogo
+  // - expect().toHaveBeenCalledWith() - Verifica que el método fue llamado con el ID correcto
+  // Sirve para: Validar que se elimina el adoptante cuando el usuario confirma la acción en el diálogo
+  it('should delete adopter when deleteAdopter is called and user confirms', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    adoptersSvcSpy.delete.and.returnValue(of({}));
+    adoptersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.deleteAdopter('123');
+    
+    expect(adoptersSvcSpy.delete).toHaveBeenCalledWith('123');
+  });
+
+  // Test deleteAdopter() - no elimina si el usuario cancela
+  // Verifica que deleteAdopter() NO elimina un adoptante cuando el usuario cancela la acción
+  // Métodos usados:
+  // - deleteAdopter(id) - Intenta eliminar pero se detiene por cancelación
+  // - spyOn(window, 'confirm').and.returnValue(false) - Simula que el usuario presiona "Cancelar"
+  // - expect().not.toHaveBeenCalled() - Verifica que el método NO fue llamado
+  // Sirve para: Validar que NO se elimina el adoptante cuando el usuario cancela (cubre el branch del if)
+  it('should not delete adopter when deleteAdopter is called and user cancels', () => {
+    spyOn(window, 'confirm').and.returnValue(false);
+    
+    component.deleteAdopter('123');
+    
+    expect(adoptersSvcSpy.delete).not.toHaveBeenCalled();
+  });
+
+  // Test deleteAdopter() - manejo de error
+  // Verifica que deleteAdopter() maneja correctamente errores con mensaje al eliminar un adoptante
+  // Métodos usados:
+  // - deleteAdopter(id) - Elimina un adoptante
+  // - spyOn(window, 'confirm').and.returnValue(true) - Simula confirmación
+  // - throwError() - Crea un observable que emite un error
+  // - expect().toBe() - Verifica que se captura el mensaje de error
+  // Sirve para: Validar que se captura y muestra el mensaje de error del servidor al eliminar
+  it('should handle error when deleting adopter fails', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    const mockError = { error: { message: 'Error al eliminar' } };
+    adoptersSvcSpy.delete.and.returnValue(throwError(() => mockError));
+    
+    component.deleteAdopter('123');
+    
+    expect(component.error).toBe('Error al eliminar');
+  });
+
+  // Test deleteAdopter() - manejo de error sin mensaje
+  it('should use default error message when deleting adopter fails without error message', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    adoptersSvcSpy.delete.and.returnValue(throwError(() => ({})));
+    
+    component.deleteAdopter('123');
+    
+    expect(component.error).toBe('Error eliminando adopter');
   });
 });

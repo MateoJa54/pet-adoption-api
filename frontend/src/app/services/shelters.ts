@@ -11,4 +11,20 @@ export class SheltersService {
   getAll() {
     return this.http.get<any[]>(this.api);
   }
+
+  getById(id: string) {
+    return this.http.get<any>(`${this.api}/${id}`);
+  }
+
+  create(shelter: any) {
+    return this.http.post<any>(this.api, shelter);
+  }
+
+  update(id: string, shelter: any) {
+    return this.http.put<any>(`${this.api}/${id}`, shelter);
+  }
+
+  delete(id: string) {
+    return this.http.delete<any>(`${this.api}/${id}`);
+  }
 }

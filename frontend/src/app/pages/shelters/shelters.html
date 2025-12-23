@@ -1,16 +1,50 @@
 <h2>Shelters</h2>
 
-<table border="1" cellpadding="6">
+<button (click)="toggleForm()">{{ showForm ? 'Cancelar' : 'Agregar Shelter' }}</button>
+
+<div *ngIf="showForm" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
+  <h3>{{ editingId ? 'Editar' : 'Nuevo' }} Shelter</h3>
+  <form (ngSubmit)="saveShelter()">
+    <div>
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="formData.name" name="name" required />
+    </div>
+    <div>
+      <label>Dirección:</label>
+      <input type="text" [(ngModel)]="formData.address" name="address" required />
+    </div>
+    <div>
+      <label>Teléfono:</label>
+      <input type="text" [(ngModel)]="formData.phone" name="phone" />
+    </div>
+    <div>
+      <label>Email:</label>
+      <input type="email" [(ngModel)]="formData.email" name="email" />
+    </div>
+    <button type="submit">Guardar</button>
+    <button type="button" (click)="toggleForm()">Cancelar</button>
+  </form>
+</div>
+
+<p *ngIf="loading">Cargando...</p>
+<p *ngIf="error" style="color:red">{{ error }}</p>
+
+<table *ngIf="!loading && !error" border="1" cellpadding="6">
   <tr>
     <th>Nombre</th>
     <th>Dirección</th>
     <th>Teléfono</th>
     <th>Email</th>
+    <th>Acciones</th>
   </tr>
   <tr *ngFor="let s of shelters">
     <td>{{ s.name }}</td>
     <td>{{ s.address }}</td>
     <td>{{ s.phone }}</td>
     <td>{{ s.email }}</td>
+    <td>
+      <button (click)="editShelter(s)">Editar</button>
+      <button (click)="deleteShelter(s._id)">Eliminar</button>
+    </td>
   </tr>
 </table>

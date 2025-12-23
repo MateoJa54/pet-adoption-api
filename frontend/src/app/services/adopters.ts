@@ -11,4 +11,20 @@ export class AdoptersService {
   getAll() {
     return this.http.get<any[]>(this.api);
   }
+
+  getById(id: string) {
+    return this.http.get<any>(`${this.api}/${id}`);
+  }
+
+  create(adopter: any) {
+    return this.http.post<any>(this.api, adopter);
+  }
+
+  update(id: string, adopter: any) {
+    return this.http.put<any>(`${this.api}/${id}`, adopter);
+  }
+
+  delete(id: string) {
+    return this.http.delete<any>(`${this.api}/${id}`);
+  }
 }

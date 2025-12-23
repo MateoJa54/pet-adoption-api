@@ -9,7 +9,7 @@ describe('SheltersComponent - Frontend Tests', () => {
   let sheltersSvcSpy: jasmine.SpyObj<SheltersService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('SheltersService', ['getAll']);
+    const spy = jasmine.createSpyObj('SheltersService', ['getAll', 'getById', 'create', 'update', 'delete']);
     spy.getAll.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
@@ -65,7 +65,7 @@ describe('SheltersComponent - Frontend Tests', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const headers = compiled.querySelectorAll('th');
     
-    expect(headers.length).toBe(4);
+    expect(headers.length).toBe(5);
     expect(headers[0].textContent).toBe('Nombre');
     expect(headers[1].textContent).toBe('Dirección');
     expect(headers[2].textContent).toBe('Teléfono');
@@ -169,7 +169,7 @@ describe('SheltersComponent - Frontend Tests', () => {
     const headerRow = table?.querySelector('tr');
     
     expect(headerRow).toBeTruthy();
-    expect(headerRow?.querySelectorAll('th').length).toBe(4);
+    expect(headerRow?.querySelectorAll('th').length).toBe(5);
   });
 
   // Tests de lógica para aumentar cobertura
@@ -200,5 +200,165 @@ describe('SheltersComponent - Frontend Tests', () => {
     component.ngOnInit();
     expect(component.error).toBe('Error cargando shelters');
     expect(component.loading).toBeFalse();
+  });
+
+  // Test toggleForm() - muestra el formulario
+  // M\u00e9todo: toggleForm() - Alterna la visibilidad del formulario
+  // Verifica: Que showForm cambia a true cuando estaba en false
+  // Sirve para: Validar que el formulario se muestra al presionar \"Agregar Shelter\"
+  it('should toggle showForm to true when toggleForm is called', () => {
+    component.showForm = false;
+    component.toggleForm();
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test toggleForm() - oculta el formulario y resetea
+  // M\u00e9todo: toggleForm() - Alterna visibilidad y resetea datos
+  // Verifica: Que showForm cambia a false y se limpian formData y editingId
+  // Sirve para: Validar que el formulario se oculta y limpia el estado de edici\u00f3n
+  it('should toggle showForm to false and reset form when toggleForm is called', () => {
+    component.showForm = true;
+    component.formData.name = 'Shelter ABC';
+    component.editingId = '123';
+    component.toggleForm();
+    expect(component.showForm).toBeFalse();
+    expect(component.formData.name).toBe('');
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test resetForm() - limpia el formulario
+  // M\u00e9todo: resetForm() - Limpia campos del formulario
+  // Verifica: Que todos los campos vuelven a sus valores iniciales
+  // Sirve para: Asegurar que el formulario se reinicia despu\u00e9s de crear/editar
+  it('should reset form data when resetForm is called', () => {
+    component.formData = { name: 'Shelter ABC', address: '123 Main St', phone: '555-1234', email: 'shelter@example.com' };
+    component.editingId = '123';
+    component.resetForm();
+    expect(component.formData).toEqual({ name: '', address: '', phone: '', email: '' });
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test saveShelter() - crear nuevo refugio
+  // M\u00e9todo: saveShelter() - Crea un nuevo refugio llamando a create()
+  // Verifica: Que create() es llamado con formData cuando editingId es null
+  // Sirve para: Validar la creaci\u00f3n de nuevos refugios sin ID de edici\u00f3n
+  it('should create new shelter when saveShelter is called without editingId', () => {
+    component.editingId = null;
+    component.formData = { name: 'Shelter ABC', address: '123 Main St', phone: '555-1234', email: 'shelter@example.com' };
+    sheltersSvcSpy.create.and.returnValue(of({}));
+    sheltersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveShelter();
+    
+    expect(sheltersSvcSpy.create).toHaveBeenCalledWith(component.formData);
+  });
+
+  // Test saveShelter() - actualizar refugio existente
+  // M\u00e9todo: saveShelter() - Actualiza un refugio existente llamando a update()
+  // Verifica: Que update() es llamado con ID y formData cuando editingId existe
+  // Sirve para: Validar la actualizaci\u00f3n de refugios existentes
+  it('should update existing shelter when saveShelter is called with editingId', () => {
+    component.editingId = '123';
+    component.formData = { name: 'Shelter Updated', address: '456 Oak Ave', phone: '555-9999', email: 'shelter@example.com' };
+    sheltersSvcSpy.update.and.returnValue(of({}));
+    sheltersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveShelter();
+    
+    expect(sheltersSvcSpy.update).toHaveBeenCalledWith('123', component.formData);
+  });
+
+  // Test saveShelter() - manejo de error al crear
+  it('should handle error when creating shelter fails', () => {
+    component.editingId = null;
+    const mockError = { error: { message: 'Error al crear' } };
+    sheltersSvcSpy.create.and.returnValue(throwError(() => mockError));
+    
+    component.saveShelter();
+    
+    expect(component.error).toBe('Error al crear');
+  });
+
+  // Test saveShelter() - manejo de error sin mensaje al crear
+  it('should use default error message when creating shelter fails without error message', () => {
+    component.editingId = null;
+    sheltersSvcSpy.create.and.returnValue(throwError(() => ({})));
+    
+    component.saveShelter();
+    
+    expect(component.error).toBe('Error creando shelter');
+  });
+
+  // Test saveShelter() - manejo de error al actualizar
+  it('should handle error when updating shelter fails', () => {
+    component.editingId = '123';
+    const mockError = { error: { message: 'Error al actualizar' } };
+    sheltersSvcSpy.update.and.returnValue(throwError(() => mockError));
+    
+    component.saveShelter();
+    
+    expect(component.error).toBe('Error al actualizar');
+  });
+
+  // Test saveShelter() - manejo de error sin mensaje al actualizar
+  it('should use default error message when updating shelter fails without error message', () => {
+    component.editingId = '123';
+    sheltersSvcSpy.update.and.returnValue(throwError(() => ({})));
+    
+    component.saveShelter();
+    
+    expect(component.error).toBe('Error actualizando shelter');
+  });
+
+  // Test editShelter() - carga datos en el formulario
+  it('should load shelter data into form when editShelter is called', () => {
+    const mockShelter = { _id: '123', name: 'Shelter ABC', address: '123 Main St', phone: '555-1234', email: 'shelter@example.com' };
+    
+    component.editShelter(mockShelter);
+    
+    expect(component.editingId).toBe('123');
+    expect(component.formData.name).toBe('Shelter ABC');
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test deleteShelter() - elimina refugio con confirmación
+  it('should delete shelter when deleteShelter is called and user confirms', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    sheltersSvcSpy.delete.and.returnValue(of({}));
+    sheltersSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.deleteShelter('123');
+    
+    expect(sheltersSvcSpy.delete).toHaveBeenCalledWith('123');
+  });
+
+  // Test deleteShelter() - no elimina si el usuario cancela
+  it('should not delete shelter when deleteShelter is called and user cancels', () => {
+    spyOn(window, 'confirm').and.returnValue(false);
+    
+    component.deleteShelter('123');
+    
+    expect(sheltersSvcSpy.delete).not.toHaveBeenCalled();
+  });
+
+  // Test deleteShelter() - manejo de error
+  it('should handle error when deleting shelter fails', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    const mockError = { error: { message: 'Error al eliminar' } };
+    sheltersSvcSpy.delete.and.returnValue(throwError(() => mockError));
+    
+    component.deleteShelter('123');
+    
+    expect(component.error).toBe('Error al eliminar');
+  });
+
+  // Test deleteShelter() - manejo de error sin mensaje
+  it('should use default error message when deleting shelter fails without error message', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    sheltersSvcSpy.delete.and.returnValue(throwError(() => ({})));
+    
+    component.deleteShelter('123');
+    
+    expect(component.error).toBe('Error eliminando shelter');
   });
 });

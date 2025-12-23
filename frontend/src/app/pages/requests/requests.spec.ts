@@ -9,7 +9,7 @@ describe('RequestsComponent - Frontend Tests', () => {
   let reqSvcSpy: jasmine.SpyObj<AdoptionRequestsService>;
 
   beforeEach(async () => {
-    const spy = jasmine.createSpyObj('AdoptionRequestsService', ['getAll']);
+    const spy = jasmine.createSpyObj('AdoptionRequestsService', ['getAll', 'getById', 'create', 'update', 'delete']);
     spy.getAll.and.returnValue(of([]));
 
     await TestBed.configureTestingModule({
@@ -55,7 +55,7 @@ describe('RequestsComponent - Frontend Tests', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     const headers = compiled.querySelectorAll('th');
     
-    expect(headers.length).toBe(4);
+    expect(headers.length).toBe(5);
     expect(headers[0].textContent).toBe('Pet ID');
     expect(headers[1].textContent).toBe('Adopter ID');
     expect(headers[2].textContent).toBe('Status');
@@ -178,5 +178,184 @@ describe('RequestsComponent - Frontend Tests', () => {
     reqSvcSpy.getAll.and.returnValue(throwError(() => ({})));
     component.ngOnInit();
     expect(component.error).toBe('Error cargando requests');
+  });
+
+  // Test toggleForm() - muestra el formulario
+  // M\u00e9todo: toggleForm() - Alterna la visibilidad del formulario de solicitudes
+  // Verifica: Que showForm cambia a true cuando estaba en false
+  // Sirve para: Validar que el formulario se muestra al presionar \"Agregar Request\"
+  it('should toggle showForm to true when toggleForm is called', () => {
+    component.showForm = false;
+    component.toggleForm();
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test toggleForm() - oculta el formulario y resetea
+  // M\u00e9todo: toggleForm() - Alterna visibilidad y resetea datos de solicitud
+  // Verifica: Que showForm cambia a false y se limpian formData y editingId
+  // Sirve para: Validar que el formulario se oculta correctamente y limpia el estado
+  it('should toggle showForm to false and reset form when toggleForm is called', () => {
+    component.showForm = true;
+    component.formData.petId = '123';
+    component.editingId = '456';
+    component.toggleForm();
+    expect(component.showForm).toBeFalse();
+    expect(component.formData.petId).toBe('');
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test resetForm() - limpia el formulario
+  // M\u00e9todo: resetForm() - Limpia campos del formulario de solicitudes
+  // Verifica: Que todos los campos vuelven a valores iniciales (petId='', adopterId='', status='Pending', comments='')
+  // Sirve para: Asegurar que el formulario se reinicia correctamente despu\u00e9s de operaciones
+  it('should reset form data when resetForm is called', () => {
+    component.formData = { petId: '123', adopterId: '456', status: 'Approved', comments: 'Test comment' };
+    component.editingId = '789';
+    component.resetForm();
+    expect(component.formData).toEqual({ petId: '', adopterId: '', status: 'Pending', comments: '' });
+    expect(component.editingId).toBeNull();
+  });
+
+  // Test saveRequest() - crear nueva solicitud
+  // Método: saveRequest() - Crea una nueva solicitud de adopción llamando a create()
+  // Verifica: Que create() es llamado con formData cuando editingId es null
+  // Sirve para: Validar la creación de nuevas solicitudes de adopción
+  it('should create new request when saveRequest is called without editingId', () => {
+    component.editingId = null;
+    component.formData = { petId: '123', adopterId: '456', status: 'Pending', comments: 'New request' };
+    reqSvcSpy.create.and.returnValue(of({}));
+    reqSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveRequest();
+    
+    expect(reqSvcSpy.create).toHaveBeenCalledWith(component.formData);
+  });
+
+  // Test saveRequest() - actualizar solicitud existente
+  // Método: saveRequest() - Actualiza una solicitud existente llamando a update()
+  // Verifica: Que update() es llamado con ID y formData cuando editingId existe
+  // Sirve para: Validar la actualización de solicitudes existentes (ej. cambiar status)
+  it('should update existing request when saveRequest is called with editingId', () => {
+    component.editingId = '789';
+    component.formData = { petId: '123', adopterId: '456', status: 'Approved', comments: 'Updated request' };
+    reqSvcSpy.update.and.returnValue(of({}));
+    reqSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.saveRequest();
+    
+    expect(reqSvcSpy.update).toHaveBeenCalledWith('789', component.formData);
+  });
+
+  // Test saveRequest() - manejo de error al crear
+  it('should handle error when creating request fails', () => {
+    component.editingId = null;
+    const mockError = { error: { message: 'Error al crear' } };
+    reqSvcSpy.create.and.returnValue(throwError(() => mockError));
+    
+    component.saveRequest();
+    
+    expect(component.error).toBe('Error al crear');
+  });
+
+  // Test saveRequest() - manejo de error sin mensaje al crear
+  it('should use default error message when creating request fails without error message', () => {
+    component.editingId = null;
+    reqSvcSpy.create.and.returnValue(throwError(() => ({})));
+    
+    component.saveRequest();
+    
+    expect(component.error).toBe('Error creando request');
+  });
+
+  // Test saveRequest() - manejo de error al actualizar
+  it('should handle error when updating request fails', () => {
+    component.editingId = '789';
+    const mockError = { error: { message: 'Error al actualizar' } };
+    reqSvcSpy.update.and.returnValue(throwError(() => mockError));
+    
+    component.saveRequest();
+    
+    expect(component.error).toBe('Error al actualizar');
+  });
+
+  // Test saveRequest() - manejo de error sin mensaje al actualizar
+  // Test editRequest() - carga datos en el formulario
+  // M\u00e9todo: editRequest(request) - Carga datos de la solicitud en formData y establece editingId
+  // Verifica: Que editingId se establece, formData se llena y showForm es true
+  // Sirve para: Validar que el formulario se prepara correctamente para editar una solicitud
+  it('should load request data into form when editRequest is called', () => {
+    const mockRequest = { _id: '789', petId: '123', adopterId: '456', status: 'Pending', comments: 'Test comment' };
+    
+    component.editRequest(mockRequest);
+    
+    expect(component.editingId).toBe('789');
+    expect(component.formData.petId).toBe('123');
+    expect(component.showForm).toBeTrue();
+  });
+
+  // Test deleteRequest() - elimina solicitud con confirmación
+  // Método: deleteRequest(id) - Elimina una solicitud después de confirmación
+  // Verifica: Que delete() es llamado con el ID correcto cuando usuario confirma
+  // Método de testing: spyOn(window, 'confirm').and.returnValue(true) - Simula confirmación
+  // Sirve para: Validar que se elimina la solicitud cuando el usuario confirma
+  it('should delete request when deleteRequest is called and user confirms', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    reqSvcSpy.delete.and.returnValue(of({}));
+    reqSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.deleteRequest('789');
+    
+    expect(reqSvcSpy.delete).toHaveBeenCalledWith('789');
+  });
+
+  // Test deleteRequest() - elimina solicitud con confirmación
+  // Método: deleteRequest(id) - Elimina una solicitud después de confirmación
+  // Verifica: Que delete() es llamado con el ID correcto cuando usuario confirma
+  // Método de testing: spyOn(window, 'confirm').and.returnValue(true) - Simula confirmación
+  // Sirve para: Validar que se elimina la solicitud cuando el usuario confirma
+  it('should delete request when deleteRequest is called and user confirms', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    reqSvcSpy.delete.and.returnValue(of({}));
+    reqSvcSpy.getAll.and.returnValue(of([]));
+    
+    component.deleteRequest('789');
+    
+    expect(reqSvcSpy.delete).toHaveBeenCalledWith('789');
+  });
+
+  // Test deleteRequest() - no elimina si el usuario cancela
+  // Método: deleteRequest(id) - Intenta eliminar pero se detiene por cancelación
+  // Verifica: Que delete() NO es llamado cuando usuario cancela
+  // Método de testing: spyOn(window, 'confirm').and.returnValue(false) - Simula cancelación
+  // Sirve para: Validar que NO se elimina cuando usuario cancela (cubre branch del if)
+// Test deleteRequest() - no elimina si el usuario cancela
+it('should not delete request when deleteRequest is called and user cancels', () => {
+  spyOn(window, 'confirm').and.returnValue(false);
+
+  component.deleteRequest('789');
+
+  expect(reqSvcSpy.delete).not.toHaveBeenCalled();
+});
+
+
+  // Test deleteRequest() - manejo de error
+  it('should handle error when deleting request fails', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    const mockError = { error: { message: 'Error al eliminar' } };
+    reqSvcSpy.delete.and.returnValue(throwError(() => mockError));
+    
+    component.deleteRequest('789');
+    
+    expect(component.error).toBe('Error al eliminar');
+  });
+
+  // Test deleteRequest() - manejo de error sin mensaje
+  it('should use default error message when deleting request fails without error message', () => {
+    spyOn(window, 'confirm').and.returnValue(true);
+    reqSvcSpy.delete.and.returnValue(throwError(() => ({})));
+    
+    component.deleteRequest('789');
+    
+    expect(component.error).toBe('Error eliminando request');
   });
 });

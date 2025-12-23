@@ -11,4 +11,20 @@ export class AdoptionRequestsService {
   getAll() {
     return this.http.get<any[]>(this.api);
   }
+
+  getById(id: string) {
+    return this.http.get<any>(`${this.api}/${id}`);
+  }
+
+  create(request: any) {
+    return this.http.post<any>(this.api, request);
+  }
+
+  update(id: string, request: any) {
+    return this.http.put<any>(`${this.api}/${id}`, request);
+  }
+
+  delete(id: string) {
+    return this.http.delete<any>(`${this.api}/${id}`);
+  }
 }
