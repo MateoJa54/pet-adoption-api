@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../services/auth';
 
@@ -11,11 +11,13 @@ import { AuthService } from '../services/auth';
   styleUrl: './layout.scss'
 })
 export class LayoutComponent {
-  constructor(private auth: AuthService) {}
+  constructor(
+    private auth: AuthService,
+    private router: Router
+  ) {}
 
   logout() {
     this.auth.logout();
-    // redirección rápida sin Router (simple)
-    window.location.href = '/login';
+    this.router.navigateByUrl('/login');
   }
 }
