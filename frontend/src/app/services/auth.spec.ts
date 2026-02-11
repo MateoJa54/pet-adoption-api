@@ -7,108 +7,124 @@ describe('AuthService', () => {
   let service: AuthService;
   let httpMock: HttpTestingController;
 
+  const apiUrl = 'http://localhost:3000/api/auth';
+
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [
-        provideHttpClient(),
-        provideHttpClientTesting()
-      ]
+      providers: [provideHttpClient(), provideHttpClientTesting()],
     });
+
     service = TestBed.inject(AuthService);
     httpMock = TestBed.inject(HttpTestingController);
+
+    localStorage.clear();
   });
 
   afterEach(() => {
-    httpMock.verify(); // Verifica que no hay peticiones HTTP pendientes
+    httpMock.verify();
+    localStorage.clear();
   });
 
-  // Verifica que el servicio de autenticación se crea correctamente
-  // TestBed.inject() - Inyecta y obtiene una instancia del servicio
-  // expect().toBeTruthy() - Verifica que el servicio existe
   it('should be created', () => {
     expect(service).toBeTruthy();
   });
 
+  // ======================
+  // HTTP tests (AAA)
+  // ======================
 
-  // Verifica que setToken() guarda el token en localStorage
-  // spyOn() - Crea un spy para espiar llamadas a métodos
-  // localStorage.setItem() - API del navegador para guardar datos en almacenamiento local
-  // expect().toHaveBeenCalledWith() - Verifica que se llamó con argumentos específicos
-  it('should store token in localStorage', () => {
-    spyOn(localStorage, 'setItem');
-    service.setToken('test-token');
-    expect(localStorage.setItem).toHaveBeenCalledWith('token', 'test-token');
+  it('AAA: login() hace POST a /auth/login y retorna token', () => {
+    // Arrange
+    const body = { username: 'mateo', password: '123' };
+    const mockResponse = { token: 'TOKEN123' };
+
+    // Act
+    service.login(body).subscribe((res) => {
+      // Assert
+      expect(res).toEqual(mockResponse);
+    });
+
+    // Assert request
+    const req = httpMock.expectOne(`${apiUrl}/login`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(body);
+    req.flush(mockResponse);
   });
 
-  // Verifica que getToken() obtiene el token de localStorage
-  // localStorage.getItem() - API del navegador para obtener datos del almacenamiento local
-  // .and.returnValue() - Configura el valor de retorno del spy
-  // expect().toBe() - Verifica igualdad estricta del valor retornado
-  it('should retrieve token from localStorage', () => {
-    spyOn(localStorage, 'getItem').and.returnValue('stored-token');
+  it('AAA: register() hace POST a /auth/register', () => {
+    // Arrange
+    const body = { username: 'nuevo', password: '123' };
+    const mockResponse = { message: 'User created' };
+
+    // Act
+    service.register(body).subscribe((res) => {
+      // Assert
+      expect(res).toEqual(mockResponse as any);
+    });
+
+    // Assert request
+    const req = httpMock.expectOne(`${apiUrl}/register`);
+    expect(req.request.method).toBe('POST');
+    expect(req.request.body).toEqual(body);
+    req.flush(mockResponse);
+  });
+
+  // ======================
+  // LocalStorage tests (AAA)
+  // ======================
+
+  it('AAA: setToken() guarda token en localStorage', () => {
+    // Arrange
+    const token = 'ABC';
+
+    // Act
+    service.setToken(token);
+
+    // Assert
+    expect(localStorage.getItem('token')).toBe(token);
+  });
+
+  it('AAA: getToken() devuelve token de localStorage', () => {
+    // Arrange
+    localStorage.setItem('token', 'XYZ');
+
+    // Act
     const token = service.getToken();
-    expect(localStorage.getItem).toHaveBeenCalledWith('token');
-    expect(token).toBe('stored-token');
+
+    // Assert
+    expect(token).toBe('XYZ');
   });
 
-  // Verifica que logout() elimina el token de localStorage
-  // localStorage.removeItem() - API del navegador para eliminar datos del almacenamiento local
-  it('should remove token from localStorage on logout', () => {
-    spyOn(localStorage, 'removeItem');
+  it('AAA: logout() elimina token de localStorage', () => {
+    // Arrange
+    localStorage.setItem('token', 'XYZ');
+
+    // Act
     service.logout();
-    expect(localStorage.removeItem).toHaveBeenCalledWith('token');
+
+    // Assert
+    expect(localStorage.getItem('token')).toBeNull();
   });
 
-  // Verifica que isLoggedIn() retorna true cuando hay token
-  // isLoggedIn() - Método que verifica si el usuario tiene sesión activa
-  // expect().toBeTrue() - Verifica que el valor sea exactamente true
-  it('should return true when token exists', () => {
-    spyOn(localStorage, 'getItem').and.returnValue('some-token');
-    expect(service.isLoggedIn()).toBeTrue();
+  it('AAA: isLoggedIn() true si existe token', () => {
+    // Arrange
+    localStorage.setItem('token', 'XYZ');
+
+    // Act
+    const logged = service.isLoggedIn();
+
+    // Assert
+    expect(logged).toBeTrue();
   });
 
-  // Verifica que isLoggedIn() retorna false cuando no hay token
-  // .and.returnValue(null) - Simula que no hay token guardado
-  // expect().toBeFalse() - Verifica que el valor sea exactamente false
-  it('should return false when token does not exist', () => {
-    spyOn(localStorage, 'getItem').and.returnValue(null);
-    expect(service.isLoggedIn()).toBeFalse();
-  });
+  it('AAA: isLoggedIn() false si NO existe token', () => {
+    // Arrange
+    localStorage.removeItem('token');
 
-  // Verifica que login() hace una petición POST al endpoint de login
-  // service.login() - Método que envía credenciales al servidor
-  // subscribe() - Se suscribe al observable para ejecutar la petición HTTP
-  // httpMock.expectOne() - Verifica que se hizo exactamente una petición HTTP
-  // req.request.method - Verifica el método HTTP usado (POST, GET, etc)
-  // req.flush() - Simula la respuesta del servidor
-  it('should call login endpoint with POST method', () => {
-    const mockCredentials = { username: 'testuser', password: 'testpass' };
-    const mockResponse = { token: 'mock-token-123' };
+    // Act
+    const logged = service.isLoggedIn();
 
-    service.login(mockCredentials).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne('http://localhost:3000/api/auth/login');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockCredentials);
-    req.flush(mockResponse);
-  });
-
-  // Verifica que register() hace una petición POST al endpoint de registro
-  // service.register() - Método que envía datos de registro al servidor
-  // httpMock.expectOne() - Verifica que solo se hizo una petición HTTP a esa URL
-  it('should call register endpoint with POST method', () => {
-    const mockCredentials = { username: 'newuser', password: 'newpass' };
-    const mockResponse = { success: true };
-
-    service.register(mockCredentials).subscribe(response => {
-      expect(response).toEqual(mockResponse);
-    });
-
-    const req = httpMock.expectOne('http://localhost:3000/api/auth/register');
-    expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(mockCredentials);
-    req.flush(mockResponse);
+    // Assert
+    expect(logged).toBeFalse();
   });
 });
