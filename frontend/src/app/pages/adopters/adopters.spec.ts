@@ -23,7 +23,7 @@ describe('AdoptersComponent', () => {
     svcSpy.delete.calls.reset();
   });
 
-  it('AAA: ngOnInit -> loadAdopters() -> llena adopters y loading false', () => {
+  it('ngOnInit -> loadAdopters() -> llena adopters y loading false', () => {
     // Arrange
     const data = [{ _id: '1', fullName: 'A' }];
     svcSpy.getAll.and.returnValue(of(data));
@@ -38,7 +38,7 @@ describe('AdoptersComponent', () => {
     expect(component.error).toBe('');
   });
 
-  it('AAA: loadAdopters() error -> setea error y loading false', () => {
+  it('loadAdopters() error -> setea error y loading false', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(throwError(() => ({ error: { message: 'boom' } })));
 
@@ -50,7 +50,7 @@ describe('AdoptersComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('AAA: toggleForm() -> abre/cierra y al cerrar resetea form', () => {
+  it('toggleForm() -> abre/cierra y al cerrar resetea form', () => {
     // Arrange
     component.showForm = false;
     component.formData.fullName = 'X';
@@ -71,7 +71,7 @@ describe('AdoptersComponent', () => {
     expect(component.formData.fullName).toBe('');
   });
 
-  it('AAA: editAdopter() -> setea editingId, copia formData y abre form', () => {
+  it('editAdopter() -> setea editingId, copia formData y abre form', () => {
     // Arrange
     const adopter = { _id: '1', fullName: 'Mateo', nationalId: '123', phone: '099', email: 'x@mail.com' };
 
@@ -84,7 +84,7 @@ describe('AdoptersComponent', () => {
     expect(component.showForm).toBeTrue();
   });
 
-  it('AAA: saveAdopter() create (sin editingId) -> llama create, recarga y cierra form', () => {
+  it('saveAdopter() create (sin editingId) -> llama create, recarga y cierra form', () => {
   // Arrange
   svcSpy.create.and.returnValue(of({ _id: '1' } as any));
   svcSpy.getAll.and.returnValue(of([])); // para loadAdopters()
@@ -102,13 +102,13 @@ describe('AdoptersComponent', () => {
   component.saveAdopter();
 
   // Assert
-  expect(svcSpy.create).toHaveBeenCalledWith(payload); // ✅ NO component.formData
+  expect(svcSpy.create).toHaveBeenCalledWith(payload); 
   expect(component.loadAdopters).toHaveBeenCalled();
   expect(component.toggleForm).toHaveBeenCalled();
 });
 
 
-  it('AAA: saveAdopter() update (con editingId) -> llama update, recarga y cierra form', () => {
+  it('saveAdopter() update (con editingId) -> llama update, recarga y cierra form', () => {
     // Arrange
     component.editingId = '1';
     component.showForm = true;
@@ -128,7 +128,7 @@ describe('AdoptersComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: deleteAdopter() confirm=false -> NO llama delete', () => {
+  it('deleteAdopter() confirm=false -> NO llama delete', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(false);
 
@@ -139,7 +139,7 @@ describe('AdoptersComponent', () => {
     expect(svcSpy.delete).not.toHaveBeenCalled();
   });
 
-  it('AAA: deleteAdopter() confirm=true -> llama delete y recarga', () => {
+  it('deleteAdopter() confirm=true -> llama delete y recarga', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(true);
     svcSpy.delete.and.returnValue(of({} as any));

@@ -24,7 +24,7 @@ describe('RequestsComponent', () => {
     svcSpy.delete.calls.reset();
   });
 
-  it('AAA: loadRequests OK -> llena requests', () => {
+  it('loadRequests OK -> llena requests', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(of([{ _id: '1', petId: 'p1', adopterId: 'a1' } as any]));
 
@@ -37,7 +37,7 @@ describe('RequestsComponent', () => {
     expect(component.error).toBe('');
   });
 
-  it('AAA: loadRequests error -> setea error y loading false', () => {
+  it('loadRequests error -> setea error y loading false', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(throwError(() => ({ error: { message: 'fail' } })));
 
@@ -49,7 +49,7 @@ describe('RequestsComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('AAA: saveRequest create -> create(), recarga y cierra', () => {
+  it('saveRequest create -> create(), recarga y cierra', () => {
     // Arrange
     component.editingId = null;
     component.showForm = true;
@@ -68,7 +68,7 @@ describe('RequestsComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: saveRequest update -> update(), recarga y cierra', () => {
+  it('saveRequest update -> update(), recarga y cierra', () => {
     // Arrange
     component.editingId = '1';
     component.showForm = true;
@@ -87,7 +87,7 @@ describe('RequestsComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: deleteRequest confirm=false -> NO delete', () => {
+  it('deleteRequest confirm=false -> NO delete', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(false);
 
@@ -98,7 +98,7 @@ describe('RequestsComponent', () => {
     expect(svcSpy.delete).not.toHaveBeenCalled();
   });
 
-  it('AAA: deleteRequest confirm=true -> delete y recarga', () => {
+  it('deleteRequest confirm=true -> delete y recarga', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(true);
     svcSpy.delete.and.returnValue(of({} as any));

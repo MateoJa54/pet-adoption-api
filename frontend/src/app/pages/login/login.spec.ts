@@ -27,7 +27,7 @@ describe('LoginComponent', () => {
     routerSpy.navigateByUrl.calls.reset();
   });
 
-  it('AAA: submit() con form inválido -> NO llama login', () => {
+  it('submit() con form inválido -> NO llama login', () => {
     // Arrange
     component.form.setValue({ username: '', password: '' });
     expect(component.form.invalid).toBeTrue();
@@ -40,7 +40,7 @@ describe('LoginComponent', () => {
     expect(routerSpy.navigateByUrl).not.toHaveBeenCalled();
   });
 
-  it('AAA: submit() válido -> login OK -> setToken y navega a /pets', () => {
+  it('submit() válido -> login OK -> setToken y navega a /pets', () => {
     // Arrange
     component.form.setValue({ username: 'mateo', password: '123' });
     authSpy.login.and.returnValue(of({ token: 'TKN' }));
@@ -55,7 +55,7 @@ describe('LoginComponent', () => {
     expect(component.error).toBe(''); // sin error
   });
 
-  it('AAA: submit() válido -> login error -> setea mensaje de error', () => {
+  it('submit() válido -> login error -> setea mensaje de error', () => {
     // Arrange
     component.form.setValue({ username: 'mateo', password: 'bad' });
     authSpy.login.and.returnValue(throwError(() => ({ error: { message: 'Invalid credentials' } })));
@@ -69,7 +69,7 @@ describe('LoginComponent', () => {
     expect(routerSpy.navigateByUrl).not.toHaveBeenCalled();
   });
 
-  it('AAA: login error sin message -> usa fallback', () => {
+  it('login error sin message -> usa fallback', () => {
     // Arrange
     component.form.setValue({ username: 'mateo', password: 'bad' });
     authSpy.login.and.returnValue(throwError(() => ({})));

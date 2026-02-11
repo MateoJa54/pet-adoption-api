@@ -21,7 +21,7 @@ describe('PetsComponent', () => {
     svcSpy.delete.calls.reset();
   });
 
-  it('AAA: loadPets OK -> llena pets', () => {
+  it('Carga la lista de mascotas', () => {
     // Arrange
     const data = [{ _id: '1', name: 'Luna' }];
     svcSpy.getAll.and.returnValue(of(data));
@@ -35,7 +35,7 @@ describe('PetsComponent', () => {
     expect(component.error).toBe('');
   });
 
-  it('AAA: loadPets error -> setea error', () => {
+  it('Mensaje de error cuando falla la carga de mascotas', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(throwError(() => ({ error: { message: 'fail' } })));
 
@@ -47,7 +47,7 @@ describe('PetsComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('AAA: savePet create -> create(), recarga y cierra', () => {
+  it('savePet create -> create(), recarga y cierra', () => {
     // Arrange
     component.editingId = null;
     component.showForm = true;
@@ -66,7 +66,7 @@ describe('PetsComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: savePet update -> update(), recarga y cierra', () => {
+  it('savePet update -> update(), recarga y cierra', () => {
     // Arrange
     component.editingId = '1';
     component.showForm = true;
@@ -85,7 +85,7 @@ describe('PetsComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: editPet -> setea editingId y abre form', () => {
+  it('editPet -> setea editingId y abre form', () => {
     // Arrange
     const pet = { _id: 'p1', name: 'Luna', status: 'Available' };
 
@@ -98,7 +98,7 @@ describe('PetsComponent', () => {
     expect(component.formData.name).toBe('Luna');
   });
 
-  it('AAA: deletePet confirm=true -> llama delete y recarga', () => {
+  it('deletePet confirm=true -> llama delete y recarga', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(true);
     svcSpy.delete.and.returnValue(of({} as any));
@@ -113,7 +113,7 @@ describe('PetsComponent', () => {
     expect(component.loadPets).toHaveBeenCalled();
   });
 
-  it('AAA: deletePet confirm=false -> NO llama delete', () => {
+  it('deletePet confirm=false -> NO llama delete', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(false);
 

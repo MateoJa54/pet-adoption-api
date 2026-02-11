@@ -21,7 +21,7 @@ describe('SheltersComponent', () => {
     svcSpy.delete.calls.reset();
   });
 
-  it('AAA: loadShelters OK -> llena shelters y loading false', () => {
+  it('loadShelters OK -> llena shelters y loading false', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(of([{ _id: '1', name: 'S1' } as any]));
 
@@ -34,7 +34,7 @@ describe('SheltersComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('AAA: loadShelters error -> usa mensaje fijo', () => {
+  it('loadShelters error -> usa mensaje fijo', () => {
     // Arrange
     svcSpy.getAll.and.returnValue(throwError(() => ({})));
 
@@ -46,7 +46,7 @@ describe('SheltersComponent', () => {
     expect(component.loading).toBeFalse();
   });
 
-  it('AAA: saveShelter create -> create(), recarga y cierra', () => {
+  it('saveShelter create -> create(), recarga y cierra', () => {
     // Arrange
     component.editingId = null;
     component.showForm = true;
@@ -65,7 +65,7 @@ describe('SheltersComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: saveShelter update -> update(), recarga y cierra', () => {
+  it('saveShelter update -> update(), recarga y cierra', () => {
     // Arrange
     component.editingId = '1';
     component.showForm = true;
@@ -84,7 +84,7 @@ describe('SheltersComponent', () => {
     expect(component.toggleForm).toHaveBeenCalled();
   });
 
-  it('AAA: deleteShelter confirm=true -> delete y recarga', () => {
+  it('deleteShelter confirm=true -> delete y recarga', () => {
     // Arrange
     spyOn(window, 'confirm').and.returnValue(true);
     svcSpy.delete.and.returnValue(of({} as any));
