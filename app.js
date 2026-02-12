@@ -7,6 +7,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:4200',
   'http://localhost:3000',
+  'https://petadoptionsystem-820a5.web.app',
+  'https://petadoptionsystem-820a5.firebaseapp.com',
   process.env.FRONTEND_URL // URL de tu frontend en Firebase
 ].filter(Boolean);
 
