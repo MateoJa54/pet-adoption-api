@@ -1,7 +1,13 @@
 node_modules/
 .env
+.env.local
+.env.production
 .DS_Store
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 coverage/
+
+# Google Cloud
+.gcloud/
+gcp-key.json

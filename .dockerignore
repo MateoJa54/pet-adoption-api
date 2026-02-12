@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Frontend
+frontend/
+
+# Tests
+tests/
+*.test.js
+*.spec.js
+coverage/
+
+# K6 tests
+k6-tests/
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Config files
+.eslintrc*
+eslint.config.js
+jest.config.js
+
+# Documentation
+*.md
+README.md
+
+# Environment
+.env.local
+.env.development
+.env.test
+
+# Firebase
+firebase.json
+.firebaserc
+DEPLOY_*.md

@@ -25,7 +25,10 @@
     "k6:all": "npm run k6:auth && npm run k6:adopters && npm run k6:pets && npm run k6:shelters && npm run k6:requests && npm run k6:frontend-all",
     "lint": "eslint",
     "build:frontend": "cd frontend && npm run build",
-    "deploy:frontend": "npm run build:frontend && firebase deploy --only hosting"
+    "deploy:frontend": "npm run build:frontend && firebase deploy --only hosting",
+    "docker:build": "docker build -t pet-adoption-api .",
+    "docker:run": "docker run -p 3000:3000 --env-file .env pet-adoption-api",
+    "deploy:backend": "gcloud run deploy pet-adoption-api --source . --platform managed --region us-central1 --allow-unauthenticated"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",

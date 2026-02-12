@@ -1,0 +1,49 @@
+name: Deploy to Cloud Run
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'app.js'
+      - 'server.js'
+      - 'controllers/**'
+      - 'models/**'
+      - 'routes/**'
+      - 'middleware/**'
+      - 'package.json'
+      - 'Dockerfile'
+  workflow_dispatch: # Permite ejecutar manualmente
+
+jobs:
+  deploy:
+    name: Deploy Backend to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy pet-adoption-api \
+            --source . \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars MONGO_URI="${{ secrets.MONGO_URI }}",JWT_SECRET="${{ secrets.JWT_SECRET }}",NODE_ENV=production,FRONTEND_URL="${{ secrets.FRONTEND_URL }}"
+
+      - name: Show deployment URL
+        run: |
+          gcloud run services describe pet-adoption-api \
+            --platform managed \
+            --region us-central1 \
+            --format 'value(status.url)'
