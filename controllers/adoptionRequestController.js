@@ -2,7 +2,7 @@ const AdoptionRequest = require('../models/AdoptionRequest');
 const Pet = require('../models/Pet');
 
 exports.getAll = async (_, res) => res.json(await AdoptionRequest.find());
-
+//hol
 exports.create = async (req, res) => {
   const { adopterId, petId } = req.body;
 
