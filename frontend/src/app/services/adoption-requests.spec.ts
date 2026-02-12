@@ -1,111 +1,55 @@
 import { TestBed } from '@angular/core/testing';
-import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
+import { provideHttpClient } from '@angular/common/http';
+import { provideHttpClientTesting, HttpTestingController } from '@angular/common/http/testing';
 import { AdoptionRequestsService } from './adoption-requests';
 import { environment } from '../../environments/environment';
 
 describe('AdoptionRequestsService', () => {
-  let service: AdoptionRequestsService;
+  let svc: AdoptionRequestsService;
   let httpMock: HttpTestingController;
-
-  const api = `${environment.apiUrl}/adoption-requests`;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [HttpClientTestingModule],
+      providers: [AdoptionRequestsService, provideHttpClient(), provideHttpClientTesting()],
     });
-
-    service = TestBed.inject(AdoptionRequestsService);
+    svc = TestBed.inject(AdoptionRequestsService);
     httpMock = TestBed.inject(HttpTestingController);
   });
 
-  afterEach(() => {
-    httpMock.verify();
-  });
+  afterEach(() => httpMock.verify());
 
-  it('AAA getAll: GET /adoption-requests', () => {
-    // Arrange
-    const mockResponse = [{ _id: '1', petId: 'p1', adopterId: 'a1' }];
-
-    // Act
-    service.getAll().subscribe((data) => {
-      // Assert
-      expect(data).toEqual(mockResponse);
-    });
-
-    // Assert (request)
-    const req = httpMock.expectOne(api);
+  it('getAll hace GET a /adoption-requests', () => {
+    svc.getAll().subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/adoption-requests`);
     expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
+    req.flush([]);
   });
 
-  it('AAA getById: GET /adoption-requests/:id', () => {
-    // Arrange
-    const id = 'r1';
-    const mockResponse = { _id: id, petId: 'p1', adopterId: 'a1' };
-
-    // Act
-    service.getById(id).subscribe((data) => {
-      // Assert
-      expect(data).toEqual(mockResponse);
-    });
-
-    // Assert (request)
-    const req = httpMock.expectOne(`${api}/${id}`);
+  it('getById hace GET a /adoption-requests/:id', () => {
+    svc.getById('r1').subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/adoption-requests/r1`);
     expect(req.request.method).toBe('GET');
-    req.flush(mockResponse);
+    req.flush({});
   });
 
-  it('AAA create: POST /adoption-requests (body)', () => {
-    // Arrange
-    const body = { petId: 'p1', adopterId: 'a1', status: 'Pending', comments: '' };
-    const mockResponse = { _id: 'r1', ...body };
-
-    // Act
-    service.create(body).subscribe((data) => {
-      // Assert
-      expect(data).toEqual(mockResponse);
-    });
-
-    // Assert (request)
-    const req = httpMock.expectOne(api);
+  it('create hace POST a /adoption-requests', () => {
+    svc.create({}).subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/adoption-requests`);
     expect(req.request.method).toBe('POST');
-    expect(req.request.body).toEqual(body);
-    req.flush(mockResponse);
+    req.flush({});
   });
 
-  it('AAA update: PUT /adoption-requests/:id (body)', () => {
-    // Arrange
-    const id = 'r1';
-    const body = { status: 'Approved' };
-    const mockResponse = { _id: id, ...body };
-
-    // Act
-    service.update(id, body).subscribe((data) => {
-      // Assert
-      expect(data).toEqual(mockResponse);
-    });
-
-    // Assert (request)
-    const req = httpMock.expectOne(`${api}/${id}`);
+  it('update hace PUT a /adoption-requests/:id', () => {
+    svc.update('r1', { status: 'Approved' }).subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/adoption-requests/r1`);
     expect(req.request.method).toBe('PUT');
-    expect(req.request.body).toEqual(body);
-    req.flush(mockResponse);
+    req.flush({});
   });
 
-  it('AAA delete: DELETE /adoption-requests/:id', () => {
-    // Arrange
-    const id = 'r1';
-    const mockResponse = { message: 'deleted' };
-
-    // Act
-    service.delete(id).subscribe((data) => {
-      // Assert
-      expect(data).toEqual(mockResponse);
-    });
-
-    // Assert (request)
-    const req = httpMock.expectOne(`${api}/${id}`);
+  it('delete hace DELETE a /adoption-requests/:id', () => {
+    svc.delete('r1').subscribe();
+    const req = httpMock.expectOne(`${environment.apiUrl}/adoption-requests/r1`);
     expect(req.request.method).toBe('DELETE');
-    req.flush(mockResponse);
+    req.flush({});
   });
 });

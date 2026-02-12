@@ -98,4 +98,50 @@ describe('SheltersComponent', () => {
     expect(svcSpy.delete).toHaveBeenCalledWith('1');
     expect(component.loadShelters).toHaveBeenCalled();
   });
+  it('editShelter pone editingId, copia formData y abre formulario', () => {
+  const s = { _id: '1', name: 'S', address: 'A', phone: '9', email: 'e@mail.com' };
+  component.editShelter(s as any);
+  expect(component.editingId).toBe('1');
+  expect(component.showForm).toBeTrue();
+  expect(component.formData.name).toBe('S');
+});
+
+it('deleteShelter con confirm=false NO llama delete', () => {
+  spyOn(window, 'confirm').and.returnValue(false);
+  component.deleteShelter('1');
+  expect(svcSpy.delete).not.toHaveBeenCalled();
+});
+
+it('si falla create sin message, usa "Error creando shelter"', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({})));
+  component.saveShelter();
+  expect(component.error).toBe('Error creando shelter');
+});
+
+it('si falla update sin message, usa "Error actualizando shelter"', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({})));
+  component.saveShelter();
+  expect(component.error).toBe('Error actualizando shelter');
+});
+it('si confirma eliminar pero el servicio falla, muestra error y no se cae', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+
+  svcSpy.delete.and.returnValue(throwError(() => ({ error: { message: 'delFail' } })));
+
+  component.deleteShelter('1'); 
+
+  expect(component.error).toBe('delFail'); 
+  expect(svcSpy.delete).toHaveBeenCalledWith('1');
+});
+it('si falla eliminar sin message, usa mensaje por defecto', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({})));
+
+  component.deleteShelter('1');
+
+  expect(component.error).toBe('Error eliminando shelter'); 
+});
+
 });

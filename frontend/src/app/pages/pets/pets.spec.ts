@@ -123,4 +123,98 @@ describe('PetsComponent', () => {
     // Assert
     expect(svcSpy.delete).not.toHaveBeenCalled();
   });
+  it('si falla loadPets sin message, usa "Error cargando pets"', () => {
+  svcSpy.getAll.and.returnValue(throwError(() => ({})));
+  component.loadPets();
+  expect(component.error).toBe('Error cargando pets');
+  expect(component.loading).toBeFalse();
+});
+
+it('si falla create al guardar, muestra message del error', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'boom' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('boom');
+});
+
+it('si falla create sin message, usa "Error creando pet"', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({})));
+
+  component.savePet();
+
+  expect(component.error).toBe('Error creando pet');
+});
+
+it('si falla update, muestra message del error', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'upfail' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('upfail');
+});
+
+it('si falla update sin message, usa "Error actualizando pet"', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({})));
+
+  component.savePet();
+
+  expect(component.error).toBe('Error actualizando pet');
+});
+it('si confirma eliminar pero el servicio falla, muestra error y no se cae', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+
+  svcSpy.delete.and.returnValue(throwError(() => ({ error: { message: 'delFail' } })));
+
+  component.deletePet('deletePet');
+
+  expect(component.error).toBe('delFail');
+  expect(svcSpy.delete).toHaveBeenCalledWith('deletePet');
+});
+it('si falla eliminar sin message, usa mensaje por defecto', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({})));
+
+  component.deletePet('p1');
+
+  expect(component.error).toBe('Error eliminando pet');
+});
+it('si falla crear con message, muestra el message', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'createFail' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('createFail');
+});
+
+it('si falla actualizar con message, muestra el message', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'updateFail' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('updateFail');
+});
+it('si falla crear con message, muestra el message', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'createFail' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('createFail');
+});
+it('si falla actualizar con message, muestra el message', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'updateFail' } })));
+
+  component.savePet();
+
+  expect(component.error).toBe('updateFail');
+});
+
 });

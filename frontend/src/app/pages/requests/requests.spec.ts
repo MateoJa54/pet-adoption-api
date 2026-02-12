@@ -112,4 +112,44 @@ describe('RequestsComponent', () => {
     expect(svcSpy.delete).toHaveBeenCalledWith('1');
     expect(component.loadRequests).toHaveBeenCalled();
   });
+  it('editRequest pone editingId, copia formData y abre el formulario', () => {
+  const req = { _id: 'r1', petId: 'p1', adopterId: 'a1', status: 'Pending', comments: 'x' };
+  component.editRequest(req as any);
+  expect(component.editingId).toBe('r1');
+  expect(component.showForm).toBeTrue();
+  expect(component.formData.petId).toBe('p1');
+});
+
+it('si falla saveRequest create sin message, usa "Error creando request"', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({})));
+  component.saveRequest();
+  expect(component.error).toBe('Error creando request');
+});
+
+it('si falla saveRequest update sin message, usa "Error actualizando request"', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({})));
+  component.saveRequest();
+  expect(component.error).toBe('Error actualizando request');
+});
+it('si confirma eliminar pero el servicio falla, muestra error y no se cae', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+
+  svcSpy.delete.and.returnValue(throwError(() => ({ error: { message: 'delFail' } })));
+
+  component.deleteRequest('1'); // cambia a deleteAdopter/deleteRequest/deleteShelter
+
+  expect(component.error).toBe('delFail'); // o tu fallback
+  expect(svcSpy.delete).toHaveBeenCalledWith('1');
+});
+it('si falla eliminar sin message, usa mensaje por defecto', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({})));
+
+  component.deleteRequest('1');
+
+  expect(component.error).toBe('Error eliminando request'); 
+});
+
 });

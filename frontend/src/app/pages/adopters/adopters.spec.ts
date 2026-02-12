@@ -153,4 +153,30 @@ describe('AdoptersComponent', () => {
     expect(svcSpy.delete).toHaveBeenCalledWith('1');
     expect(component.loadAdopters).toHaveBeenCalled();
   });
+
+  it('si falla loadAdopters sin message, usa "Error cargando adopters"', () => {
+  svcSpy.getAll.and.returnValue(throwError(() => ({})));
+  component.loadAdopters();
+  expect(component.error).toBe('Error cargando adopters');
+  expect(component.loading).toBeFalse();
+});
+
+it('si falla create sin message, usa "Error creando adopter"', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({})));
+  component.saveAdopter();
+  expect(component.error).toBe('Error creando adopter');
+});
+it('si confirma eliminar pero el servicio falla, muestra error y no se cae', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+
+  svcSpy.delete.and.returnValue(throwError(() => ({ error: { message: 'delFail' } })));
+
+  component.deleteAdopter('1'); // cambia a deleteAdopter/deleteRequest/deleteShelter
+
+  expect(component.error).toBe('delFail'); // o tu fallback
+  expect(svcSpy.delete).toHaveBeenCalledWith('1');
+});
+
+
 });
