@@ -3,53 +3,63 @@
 
 <button (click)="toggleForm()">{{ showForm ? 'Cancelar' : 'Agregar Request' }}</button>
 
-<div *ngIf="showForm" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
-  <h3>{{ editingId ? 'Editar' : 'Nueva' }} Solicitud</h3>
-  <form (ngSubmit)="saveRequest()">
-    <div>
-      <label>Pet ID:</label>
-      <input type="text" [(ngModel)]="formData.petId" name="petId" required />
-    </div>
-    <div>
-      <label>Adopter ID:</label>
-      <input type="text" [(ngModel)]="formData.adopterId" name="adopterId" required />
-    </div>
-    <div>
-      <label>Status:</label>
-      <select [(ngModel)]="formData.status" name="status">
-        <option value="Pending">Pending</option>
-        <option value="Approved">Approved</option>
-        <option value="Rejected">Rejected</option>
-      </select>
-    </div>
-    <div>
-      <label>Comments:</label>
-      <textarea [(ngModel)]="formData.comments" name="comments" rows="3"></textarea>
-    </div>
-    <button type="submit">Guardar</button>
-    <button type="button" (click)="toggleForm()">Cancelar</button>
-  </form>
-</div>
+@if (showForm) {
+  <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
+    <h3>{{ editingId ? 'Editar' : 'Nueva' }} Solicitud</h3>
+    <form (ngSubmit)="saveRequest()">
+      <div>
+        <label>Pet ID:</label>
+        <input type="text" [(ngModel)]="formData.petId" name="petId" required />
+      </div>
+      <div>
+        <label>Adopter ID:</label>
+        <input type="text" [(ngModel)]="formData.adopterId" name="adopterId" required />
+      </div>
+      <div>
+        <label>Status:</label>
+        <select [(ngModel)]="formData.status" name="status">
+          <option value="Pending">Pending</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
+      <div>
+        <label>Comments:</label>
+        <textarea [(ngModel)]="formData.comments" name="comments" rows="3"></textarea>
+      </div>
+      <button type="submit">Guardar</button>
+      <button type="button" (click)="toggleForm()">Cancelar</button>
+    </form>
+  </div>
+}
 
-<p *ngIf="loading">Cargando...</p>
-<p *ngIf="error" style="color:red">{{ error }}</p>
+@if (loading) {
+  <p>Cargando...</p>
+}
+@if (error) {
+  <p style="color:red">{{ error }}</p>
+}
 
-<table *ngIf="!loading && !error" border="1" cellpadding="6">
-  <tr>
-    <th>Pet ID</th>
-    <th>Adopter ID</th>
-    <th>Status</th>
-    <th>Comments</th>
-    <th>Acciones</th>
-  </tr>
-  <tr *ngFor="let r of requests">
-    <td>{{ r.petId }}</td>
-    <td>{{ r.adopterId }}</td>
-    <td>{{ r.status }}</td>
-    <td>{{ r.comments }}</td>
-    <td>
-      <button (click)="editRequest(r)">Editar</button>
-      <button (click)="deleteRequest(r._id)">Eliminar</button>
-    </td>
-  </tr>
-</table>
+@if (!loading && !error) {
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Pet ID</th>
+      <th>Adopter ID</th>
+      <th>Status</th>
+      <th>Comments</th>
+      <th>Acciones</th>
+    </tr>
+    @for (r of requests; track r) {
+      <tr>
+        <td>{{ r.petId }}</td>
+        <td>{{ r.adopterId }}</td>
+        <td>{{ r.status }}</td>
+        <td>{{ r.comments }}</td>
+        <td>
+          <button (click)="editRequest(r)">Editar</button>
+          <button (click)="deleteRequest(r._id)">Eliminar</button>
+        </td>
+      </tr>
+    }
+  </table>
+}

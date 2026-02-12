@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { AdoptionRequestsService } from '../../services/adoption-requests';
 
 @Component({
   selector: 'app-requests',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './requests.html',
   styleUrls: ['./requests.scss']
 })

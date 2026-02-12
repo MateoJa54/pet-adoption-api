@@ -1,12 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { AdoptersService } from '../../services/adopters';
 
 @Component({
   selector: 'app-adopters',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './adopters.html',
   styleUrls: ['./adopters.scss']
 })

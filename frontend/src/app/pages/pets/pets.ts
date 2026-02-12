@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import { FormsModule } from '@angular/forms';
 import { PetsService } from '../../services/pets';
 
 @Component({
   selector: 'app-pets',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './pets.html',
   styleUrls: ['./pets.scss']
 })

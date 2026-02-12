@@ -2,49 +2,59 @@
 
 <button (click)="toggleForm()">{{ showForm ? 'Cancelar' : 'Agregar Adopter' }}</button>
 
-<div *ngIf="showForm" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
-  <h3>{{ editingId ? 'Editar' : 'Nuevo' }} Adopter</h3>
-  <form (ngSubmit)="saveAdopter()">
-    <div>
-      <label>Full Name:</label>
-      <input type="text" [(ngModel)]="formData.fullName" name="fullName" required />
-    </div>
-    <div>
-      <label>National ID:</label>
-      <input type="text" [(ngModel)]="formData.nationalId" name="nationalId" required />
-    </div>
-    <div>
-      <label>Phone:</label>
-      <input type="text" [(ngModel)]="formData.phone" name="phone" />
-    </div>
-    <div>
-      <label>Email:</label>
-      <input type="email" [(ngModel)]="formData.email" name="email" required />
-    </div>
-    <button type="submit">Guardar</button>
-    <button type="button" (click)="toggleForm()">Cancelar</button>
-  </form>
-</div>
+@if (showForm) {
+  <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
+    <h3>{{ editingId ? 'Editar' : 'Nuevo' }} Adopter</h3>
+    <form (ngSubmit)="saveAdopter()">
+      <div>
+        <label>Full Name:</label>
+        <input type="text" [(ngModel)]="formData.fullName" name="fullName" required />
+      </div>
+      <div>
+        <label>National ID:</label>
+        <input type="text" [(ngModel)]="formData.nationalId" name="nationalId" required />
+      </div>
+      <div>
+        <label>Phone:</label>
+        <input type="text" [(ngModel)]="formData.phone" name="phone" />
+      </div>
+      <div>
+        <label>Email:</label>
+        <input type="email" [(ngModel)]="formData.email" name="email" required />
+      </div>
+      <button type="submit">Guardar</button>
+      <button type="button" (click)="toggleForm()">Cancelar</button>
+    </form>
+  </div>
+}
 
-<p *ngIf="loading">Cargando...</p>
-<p *ngIf="error" style="color:red">{{ error }}</p>
+@if (loading) {
+  <p>Cargando...</p>
+}
+@if (error) {
+  <p style="color:red">{{ error }}</p>
+}
 
-<table *ngIf="!loading && !error" border="1" cellpadding="6">
-  <tr>
-    <th>Full Name</th>
-    <th>National ID</th>
-    <th>Phone</th>
-    <th>Email</th>
-    <th>Acciones</th>
-  </tr>
-  <tr *ngFor="let a of adopters">
-    <td>{{ a.fullName }}</td>
-    <td>{{ a.nationalId }}</td>
-    <td>{{ a.phone }}</td>
-    <td>{{ a.email }}</td>
-    <td>
-      <button (click)="editAdopter(a)">Editar</button>
-      <button (click)="deleteAdopter(a._id)">Eliminar</button>
-    </td>
-  </tr>
-</table>
+@if (!loading && !error) {
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Full Name</th>
+      <th>National ID</th>
+      <th>Phone</th>
+      <th>Email</th>
+      <th>Acciones</th>
+    </tr>
+    @for (a of adopters; track a) {
+      <tr>
+        <td>{{ a.fullName }}</td>
+        <td>{{ a.nationalId }}</td>
+        <td>{{ a.phone }}</td>
+        <td>{{ a.email }}</td>
+        <td>
+          <button (click)="editAdopter(a)">Editar</button>
+          <button (click)="deleteAdopter(a._id)">Eliminar</button>
+        </td>
+      </tr>
+    }
+  </table>
+}

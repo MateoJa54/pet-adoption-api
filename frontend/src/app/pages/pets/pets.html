@@ -2,64 +2,74 @@
 
 <button (click)="toggleForm()">{{ showForm ? 'Cancelar' : 'Agregar Pet' }}</button>
 
-<div *ngIf="showForm" style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
-  <h3>{{ editingId ? 'Editar' : 'Nuevo' }} Pet</h3>
-  <form (ngSubmit)="savePet()">
-    <div>
-      <label>Nombre:</label>
-      <input type="text" [(ngModel)]="formData.name" name="name" required />
-    </div>
-    <div>
-      <label>Especie:</label>
-      <input type="text" [(ngModel)]="formData.species" name="species" required />
-    </div>
-    <div>
-      <label>Raza:</label>
-      <input type="text" [(ngModel)]="formData.breed" name="breed" />
-    </div>
-    <div>
-      <label>Edad:</label>
-      <input type="number" [(ngModel)]="formData.ageYears" name="ageYears" />
-    </div>
-    <div>
-      <label>Sexo:</label>
-      <input type="text" [(ngModel)]="formData.sex" name="sex" />
-    </div>
-    <div>
-      <label>Estado:</label>
-      <select [(ngModel)]="formData.status" name="status">
-        <option value="Available">Available</option>
-        <option value="Adopted">Adopted</option>
-      </select>
-    </div>
-    <button type="submit">Guardar</button>
-    <button type="button" (click)="toggleForm()">Cancelar</button>
-  </form>
-</div>
+@if (showForm) {
+  <div style="margin: 20px 0; padding: 15px; border: 1px solid #ccc;">
+    <h3>{{ editingId ? 'Editar' : 'Nuevo' }} Pet</h3>
+    <form (ngSubmit)="savePet()">
+      <div>
+        <label>Nombre:</label>
+        <input type="text" [(ngModel)]="formData.name" name="name" required />
+      </div>
+      <div>
+        <label>Especie:</label>
+        <input type="text" [(ngModel)]="formData.species" name="species" required />
+      </div>
+      <div>
+        <label>Raza:</label>
+        <input type="text" [(ngModel)]="formData.breed" name="breed" />
+      </div>
+      <div>
+        <label>Edad:</label>
+        <input type="number" [(ngModel)]="formData.ageYears" name="ageYears" />
+      </div>
+      <div>
+        <label>Sexo:</label>
+        <input type="text" [(ngModel)]="formData.sex" name="sex" />
+      </div>
+      <div>
+        <label>Estado:</label>
+        <select [(ngModel)]="formData.status" name="status">
+          <option value="Available">Available</option>
+          <option value="Adopted">Adopted</option>
+        </select>
+      </div>
+      <button type="submit">Guardar</button>
+      <button type="button" (click)="toggleForm()">Cancelar</button>
+    </form>
+  </div>
+}
 
-<p *ngIf="loading">Cargando...</p>
-<p *ngIf="error" style="color:red">{{ error }}</p>
+@if (loading) {
+  <p>Cargando...</p>
+}
+@if (error) {
+  <p style="color:red">{{ error }}</p>
+}
 
-<table *ngIf="!loading && !error" border="1" cellpadding="6">
-  <tr>
-    <th>Nombre</th>
-    <th>Especie</th>
-    <th>Raza</th>
-    <th>Edad</th>
-    <th>Sexo</th>
-    <th>Estado</th>
-    <th>Acciones</th>
-  </tr>
-  <tr *ngFor="let p of pets">
-    <td>{{ p.name }}</td>
-    <td>{{ p.species }}</td>
-    <td>{{ p.breed }}</td>
-    <td>{{ p.ageYears }}</td>
-    <td>{{ p.sex }}</td>
-    <td>{{ p.status }}</td>
-    <td>
-      <button (click)="editPet(p)">Editar</button>
-      <button (click)="deletePet(p._id)">Eliminar</button>
-    </td>
-  </tr>
-</table>
+@if (!loading && !error) {
+  <table border="1" cellpadding="6">
+    <tr>
+      <th>Nombre</th>
+      <th>Especie</th>
+      <th>Raza</th>
+      <th>Edad</th>
+      <th>Sexo</th>
+      <th>Estado</th>
+      <th>Acciones</th>
+    </tr>
+    @for (p of pets; track p) {
+      <tr>
+        <td>{{ p.name }}</td>
+        <td>{{ p.species }}</td>
+        <td>{{ p.breed }}</td>
+        <td>{{ p.ageYears }}</td>
+        <td>{{ p.sex }}</td>
+        <td>{{ p.status }}</td>
+        <td>
+          <button (click)="editPet(p)">Editar</button>
+          <button (click)="deletePet(p._id)">Eliminar</button>
+        </td>
+      </tr>
+    }
+  </table>
+}
