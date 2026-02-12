@@ -8,6 +8,6 @@ module.exports = mongoose.model('Pet', new mongoose.Schema({
   breed: String,
   ageYears: Number,
   sex: String,          // M/F u otro esquema
-  status: { type: String, default: "AVAILABLE" }, // AVAILABLE | IN_PROCESS | ADOPTED
+  status: { type: String, default: 'AVAILABLE' }, // AVAILABLE | IN_PROCESS | ADOPTED
   intakeDate: Date
 }));

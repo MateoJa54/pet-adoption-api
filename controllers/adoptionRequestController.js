@@ -7,20 +7,20 @@ exports.create = async (req, res) => {
   const { adopterId, petId } = req.body;
 
   // LÍNEA CLAVE PARA REGRESIÓN: valida campos requeridos
-  if (!adopterId || !petId) return res.status(400).json({ message: "Required fields" });
+  if (!adopterId || !petId) {return res.status(400).json({ message: 'Required fields' });}
 
   // Regla mínima: si la mascota no existe, 404
   const pet = await Pet.findById(petId);
-  if (!pet) return res.status(404).json({ message: "Pet not found" });
+  if (!pet) {return res.status(404).json({ message: 'Pet not found' });}
 
   // Regla de negocio útil para pruebas: no permitir solicitar si ya fue adoptada
-  if (pet.status === "ADOPTED") {
-    return res.status(400).json({ message: "Pet already adopted" });
+  if (pet.status === 'ADOPTED') {
+    return res.status(400).json({ message: 'Pet already adopted' });
   }
 
   // Opcional: si estaba disponible, pasa a proceso
-  if (pet.status === "AVAILABLE") {
-    pet.status = "IN_PROCESS";
+  if (pet.status === 'AVAILABLE') {
+    pet.status = 'IN_PROCESS';
     await pet.save();
   }
 

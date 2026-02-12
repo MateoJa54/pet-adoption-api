@@ -5,6 +5,6 @@ module.exports = mongoose.model('AdoptionRequest', new mongoose.Schema({
   adopterId: String,
   petId: String,
   requestDate: { type: Date, default: Date.now },
-  status: { type: String, default: "PENDING" }, // PENDING | APPROVED | REJECTED
+  status: { type: String, default: 'PENDING' }, // PENDING | APPROVED | REJECTED
   comments: String
 }));

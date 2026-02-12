@@ -178,5 +178,35 @@ it('si confirma eliminar pero el servicio falla, muestra error y no se cae', () 
   expect(svcSpy.delete).toHaveBeenCalledWith('1');
 });
 
+it('si falla eliminar sin message, usa mensaje por defecto', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({})));
+
+  component.deleteAdopter('1');
+
+  expect(component.error).toBe('Error eliminando adopter');
+});
+
+it('si falla update sin message, usa "Error actualizando adopter"', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({})));
+  component.saveAdopter();
+  expect(component.error).toBe('Error actualizando adopter');
+});
+
+it('si falla update con message, usa ese mensaje', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'custom update fail' } })));
+  component.saveAdopter();
+  expect(component.error).toBe('custom update fail');
+});
+
+it('si falla create con message, usa ese mensaje', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'custom create fail' } })));
+  component.saveAdopter();
+  expect(component.error).toBe('custom create fail');
+});
+
 
 });

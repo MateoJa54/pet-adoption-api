@@ -1,0 +1,37 @@
+name: CI Workflow
+
+# Workflow de integración continua
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clonar el repositorio!!!!!!
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+
+      - name: Instalar las dependencias
+        run: npm install
+
+      - name: Lint del codigo
+        run: npm run lint
+      
+      - name: Ejecutar pruebas
+        run: npm test 
+      
+      - name: Ejecutar cobertura
+        run: npm test -- --coverage
+        
+      - name: build
+        run: npm ci
+        
+

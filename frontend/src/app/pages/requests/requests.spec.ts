@@ -149,7 +149,28 @@ it('si falla eliminar sin message, usa mensaje por defecto', () => {
 
   component.deleteRequest('1');
 
-  expect(component.error).toBe('Error eliminando request'); 
+  expect(component.error).toBe('Error eliminando request');
+});
+
+it('toggleForm abre/cierra y al cerrar resetea form', () => {
+  component.showForm = false;
+  component.formData.petId = 'X';
+  component.editingId = '123';
+
+  component.toggleForm();
+  expect(component.showForm).toBeTrue();
+
+  component.toggleForm();
+  expect(component.showForm).toBeFalse();
+  expect(component.editingId).toBeNull();
+  expect(component.formData.petId).toBe('');
+});
+
+it('si falla loadRequests sin message, usa "Error cargando requests"', () => {
+  svcSpy.getAll.and.returnValue(throwError(() => ({})));
+  component.loadRequests();
+  expect(component.error).toBe('Error cargando requests');
+  expect(component.loading).toBeFalse();
 });
 
 });

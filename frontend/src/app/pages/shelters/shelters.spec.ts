@@ -144,4 +144,39 @@ it('si falla eliminar sin message, usa mensaje por defecto', () => {
   expect(component.error).toBe('Error eliminando shelter'); 
 });
 
+it('toggleForm abre/cierra y al cerrar resetea form', () => {
+  component.showForm = false;
+  component.formData.name = 'X';
+  component.editingId = '123';
+
+  component.toggleForm();
+  expect(component.showForm).toBeTrue();
+
+  component.toggleForm();
+  expect(component.showForm).toBeFalse();
+  expect(component.editingId).toBeNull();
+  expect(component.formData.name).toBe('');
+});
+
+it('si falla loadShelters con message, usa ese mensaje', () => {
+  svcSpy.getAll.and.returnValue(throwError(() => ({ error: { message: 'custom error' } })));
+  component.loadShelters();
+  expect(component.error).toBe('custom error');
+  expect(component.loading).toBeFalse();
+});
+
+it('si falla create con message, usa ese mensaje', () => {
+  component.editingId = null;
+  svcSpy.create.and.returnValue(throwError(() => ({ error: { message: 'create fail' } })));
+  component.saveShelter();
+  expect(component.error).toBe('create fail');
+});
+
+it('si falla update con message, usa ese mensaje', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'update fail' } })));
+  component.saveShelter();
+  expect(component.error).toBe('update fail');
+});
+
 });

@@ -148,6 +148,48 @@ it('si falla create sin message, usa "Error creando pet"', () => {
   expect(component.error).toBe('Error creando pet');
 });
 
+it('si falla update sin message, usa "Error actualizando pet"', () => {
+  component.editingId = '1';
+  svcSpy.update.and.returnValue(throwError(() => ({})));
+
+  component.savePet();
+
+  expect(component.error).toBe('Error actualizando pet');
+});
+
+it('si confirma eliminar pero el servicio falla, muestra error', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({ error: { message: 'delFail' } })));
+
+  component.deletePet('1');
+
+  expect(component.error).toBe('delFail');
+  expect(svcSpy.delete).toHaveBeenCalledWith('1');
+});
+
+it('si falla eliminar sin message, usa mensaje por defecto', () => {
+  spyOn(window, 'confirm').and.returnValue(true);
+  svcSpy.delete.and.returnValue(throwError(() => ({})));
+
+  component.deletePet('1');
+
+  expect(component.error).toBe('Error eliminando pet');
+});
+
+it('toggleForm abre/cierra y al cerrar resetea form', () => {
+  component.showForm = false;
+  component.formData.name = 'X';
+  component.editingId = '123';
+
+  component.toggleForm();
+  expect(component.showForm).toBeTrue();
+
+  component.toggleForm();
+  expect(component.showForm).toBeFalse();
+  expect(component.editingId).toBeNull();
+  expect(component.formData.name).toBe('');
+});
+
 it('si falla update, muestra message del error', () => {
   component.editingId = '1';
   svcSpy.update.and.returnValue(throwError(() => ({ error: { message: 'upfail' } })));

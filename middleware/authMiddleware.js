@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 module.exports = (req, res, next) => {
   // Extrae el token del header Authorization: Bearer <token>
   const token = req.headers.authorization?.split(' ')[1];
-  if (!token) return res.status(401).json({ error: 'Token required' });
+  if (!token) {return res.status(401).json({ error: 'Token required' });}
 
   try {
     // Verifica y decodifica el token

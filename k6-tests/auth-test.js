@@ -65,12 +65,11 @@ export default function () {
     { headers: { 'Content-Type': 'application/json' } }
   );
 
-  let token;
   check(res, {
     'inicio sesion exitoso': (r) => {
       if (r.status === 200) {
         try {
-          token = r.json('token');
+          r.json('token');
           return true;
         } catch {
           return false;

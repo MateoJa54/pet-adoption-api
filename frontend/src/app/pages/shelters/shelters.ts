@@ -37,8 +37,8 @@ export class SheltersComponent {
         this.shelters = data;
         this.loading = false;
       },
-      error: () => {
-        this.error = 'Error cargando shelters';
+      error: (err) => {
+        this.error = err?.error?.message ?? 'Error cargando shelters';
         this.loading = false;
       }
     });
