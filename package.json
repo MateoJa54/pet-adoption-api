@@ -23,7 +23,9 @@
     "k6:frontend-assets": "k6 run k6-tests/frontend-static-assets-test.js",
     "k6:frontend-all": "npm run k6:frontend-login && npm run k6:frontend-navigation && npm run k6:frontend-assets",
     "k6:all": "npm run k6:auth && npm run k6:adopters && npm run k6:pets && npm run k6:shelters && npm run k6:requests && npm run k6:frontend-all",
-    "lint": "eslint"
+    "lint": "eslint",
+    "build:frontend": "cd frontend && npm run build",
+    "deploy:frontend": "npm run build:frontend && firebase deploy --only hosting"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
