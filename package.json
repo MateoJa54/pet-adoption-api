@@ -9,7 +9,7 @@
     "dev": "concurrently -k -n BACKEND,FRONTEND -c green,blue \"npm run start:backend\" \"npm run start:frontend\"",
     "install:all": "npm install && npm --prefix frontend install",
     "test:backend": "jest --runInBand",
-    "test:frontend": "npm --prefix frontend test",
+    "test:frontend": "cd frontend && npm test",
     "test": "npm run test:backend && npm run test:frontend",
     "k6:auth": "k6 run k6-tests/auth-test.js",
     "k6:adopters": "k6 run k6-tests/adopters-test.js",
